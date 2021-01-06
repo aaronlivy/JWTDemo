@@ -27,14 +27,8 @@ namespace AntifogeryDemo.Filters
 
         private bool ValidateRequestHeader(HttpRequestBase request)
         {
-            string tokenValue = request.Headers["RequestVerificationToken"];
 
-            var result = false;
-
-            if (!string.IsNullOrEmpty(tokenValue))
-            {
-                result = TokenCache.GetToken(tokenValue);
-            }
+            var result = TokenManager.GetUser() == null;
 
             return result;
         }
