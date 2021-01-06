@@ -431,3 +431,11 @@ MigrationBackup/
 .ionide/
 
 # End of https://www.toptal.com/developers/gitignore/api/visualstudio,rider
+.idea/.idea.AntifogeryDemo/riderModule.iml
+.idea/.idea.AntifogeryDemo/.idea/.gitignore
+.idea/.idea.AntifogeryDemo/.idea/.name
+.idea/.idea.AntifogeryDemo/.idea/encodings.xml
+.idea/.idea.AntifogeryDemo/.idea/indexLayout.xml
+.idea/.idea.AntifogeryDemo/.idea/vcs.xml
+.idea/.idea.AntifogeryDemo/.idea/codeStyles/codeStyleConfig.xml
+.idea/config/applicationhost.config
