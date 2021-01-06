@@ -7,7 +7,7 @@ using System.Web.Mvc;
 
 namespace AntifogeryDemo.Filters
 {
-    public class AjaxValidateTokenAttribute : FilterAttribute, IAuthorizationFilter
+    public class JWTValidateAttribute : FilterAttribute, IAuthorizationFilter
     {
         public void OnAuthorization(AuthorizationContext filterContext)
         {
@@ -27,8 +27,14 @@ namespace AntifogeryDemo.Filters
 
         private bool ValidateRequestHeader(HttpRequestBase request)
         {
+            string tokenValue = request.Headers["RequestVerificationToken"];
 
-            var result = TokenManager.GetUser() == null;
+            var result = false;
+
+            if (!string.IsNullOrEmpty(tokenValue))
+            {
+                result = TokenCache.GetToken(tokenValue);
+            }
 
             return result;
         }
