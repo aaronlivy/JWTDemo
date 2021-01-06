@@ -130,6 +130,7 @@
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Filters\AjaxValidateAntiForgeryTokenAttribute.cs" />
     <Compile Include="Filters\AjaxValidateTokenAttribute.cs" />
+    <Compile Include="Filters\JWTValidateAttribute.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
