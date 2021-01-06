@@ -31,7 +31,7 @@ namespace AntifogeryDemo.Methods
         //產生 Token
         public static Token Create(User user)
         {
-            var exp = 10;   //過期時間(秒)
+            var exp = 30;   //過期時間(秒)
 
             //稍微修改 Payload 將使用者資訊和過期時間分開
             var payload = new Payload
@@ -70,7 +70,7 @@ namespace AntifogeryDemo.Methods
         {
             var token = HttpContext.Current.Request.Headers["Authoriaztion"];
 
-            if (string.IsNullOrEmpty(token)) return null;
+            if (string.IsNullOrEmpty(token) || !ContainsKey(token)) return null;
 
             var split = token.Split('.');
             var iv = split[0];
