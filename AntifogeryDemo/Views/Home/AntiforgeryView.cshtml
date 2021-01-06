@@ -1,0 +1,13 @@
+﻿
+@{
+    ViewBag.Title = "AntiforgeryView";
+}
+
+<h2>AntiforgeryView</h2>
+
+@using (Html.BeginForm("AjaxEdit", "Home", FormMethod.Post))
+{
+    @Html.AntiForgeryToken();
+    <input type="text" value="123" id="test1" name="test1" />
+    <input type="submit" value="send" />
+}

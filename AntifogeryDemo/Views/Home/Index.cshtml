@@ -1,0 +1,34 @@
+﻿@{
+    ViewBag.Title = "Home Page";
+}
+
+<script type="text/javascript">
+	$(function () {
+		$('#btnCheck').on('click', function () {
+			var _Object = {
+				strLastName: $.trim($('#txtAccount').val())
+			};
+
+			$.ajax({
+				type: "POST",
+				url: '@Url.Action("Edit", "Home")',
+				data: JSON.stringify(_Object),
+				async: false,
+				contentType: "application/json; charset=utf-8",
+				dataType: "json",
+				headers:{
+					//加入 Request Header，這裡就會使用到在一開始所建立的 GetAntiForgeryToken()
+					'RequestVerificationToken':'@CommonRazorFunctions.GetAntiForgeryToken()'
+				},
+                success: function (response) {
+                    alert('response: ' + response);
+				},
+				error: function (error) {
+					alert('error: ' + error);
+				}
+			});
+		});
+	});
+</script>
+
+<input type="button" id="btnCheck" value="call" />
