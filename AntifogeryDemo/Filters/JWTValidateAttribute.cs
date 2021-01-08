@@ -13,7 +13,7 @@ namespace AntifogeryDemo.Filters
         {
             try
             {
-                if (!filterContext.HttpContext.Request.IsAjaxRequest() || !ValidateRequestHeader(filterContext.HttpContext.Request))
+                if (!ValidateRequestHeader(filterContext.HttpContext.Request))
                 {
                     filterContext.HttpContext.Response.StatusCode = 404;
                     filterContext.Result = new HttpNotFoundResult();

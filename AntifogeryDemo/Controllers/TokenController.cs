@@ -6,6 +6,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Web.Mvc;
+using AntifogeryDemo.Filters;
 
 namespace AntifogeryDemo.Controllers
 {
@@ -32,7 +33,7 @@ namespace AntifogeryDemo.Controllers
             //產生 Token
             var token = TokenManager.Create(user);
             //需存入資料庫
-            TokenManager.Add(token.refresh_token, user);
+            TokenCache.SetToken(token.access_token);
             return Json(token, JsonRequestBehavior.AllowGet);
         }
 
@@ -58,12 +59,14 @@ namespace AntifogeryDemo.Controllers
 
         //測試是否通過驗證
         [HttpPost]
+        [JWTValidate]
         public ActionResult IsAuthenticated()
         {
-            var user = TokenManager.GetUser();
-            var result = user == null ? false : true;
+            var result = true;
+            
+            var token = TokenManager.Create(result);
 
-            return Json(result, JsonRequestBehavior.AllowGet);
+            return Json(token, JsonRequestBehavior.AllowGet);
         }
     }
 }
