@@ -7,6 +7,7 @@ using System.Text;
 using System.Web;
 using JWT;
 using JWT.Algorithms;
+using JWT.Exceptions;
 using JWT.Serializers;
 
 namespace AntifogeryDemo.Methods
@@ -73,25 +74,37 @@ namespace AntifogeryDemo.Methods
         //取得使用者資訊
         public static User GetUser()
         {
-            var token = HttpContext.Current.Request.Headers["Authoriaztion"];
+            var token = HttpContext.Current.Request.Headers["RequestVerificationToken"];
+            var json = string.Empty;
 
-            if (string.IsNullOrEmpty(token) || !ContainsKey(token)) return null;
+            if (string.IsNullOrEmpty(token)) return null;
+            var iv = Guid.NewGuid().ToString().Replace("-", "").Substring(0, 16);
 
-            var split = token.Split('.');
-            var iv = split[0];
-            var encrypt = split[1];
-            var signature = split[2];
-
-            //檢查簽章是否正確
-            if (signature != TokenCrypto.ComputeHMACSHA256(iv + "." + encrypt, key.Substring(0, 64)))
+            try
             {
-                return null;
+                IJsonSerializer serializer = new JsonNetSerializer();
+                var provider = new UtcDateTimeProvider();
+                IJwtValidator validator = new JwtValidator(serializer, provider);
+                IBase64UrlEncoder urlEncoder = new JwtBase64UrlEncoder();
+                IJwtAlgorithm algorithm = new HMACSHA256Algorithm(); // symmetric
+                IJwtDecoder decoder = new JwtDecoder(serializer, validator, urlEncoder, algorithm);
+    
+                json = decoder.Decode(token, secret, verify: true);
+                
+                var base64 = TokenCrypto
+                    .AESDecrypt(json, key.Substring(0, 16), iv);
+                
+                Console.WriteLine(json);
             }
-
-            //使用 AES 解密 Payload
-            var base64 = TokenCrypto
-                .AESDecrypt(encrypt, key.Substring(0, 16), iv);
-            var json = Encoding.UTF8.GetString(Convert.FromBase64String(base64));
+            catch (TokenExpiredException)
+            {
+                Console.WriteLine("Token has expired");
+            }
+            catch (SignatureVerificationException)
+            {
+                Console.WriteLine("Token has invalid signature");
+            }
+            
             var payload = JsonConvert.DeserializeObject<Payload>(json);
 
             //檢查是否過期

@@ -33,7 +33,7 @@ namespace AntifogeryDemo.Filters
 
             if (!string.IsNullOrEmpty(tokenValue))
             {
-                result = TokenCache.GetToken(tokenValue);
+                result = TokenManager.GetUser() != null;
             }
 
             return result;
