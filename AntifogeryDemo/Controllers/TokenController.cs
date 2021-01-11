@@ -46,7 +46,8 @@ namespace AntifogeryDemo.Controllers
             {
                 throw new Exception("查無此 Refresh Token");
             }
-            //需查詢資料庫
+            
+            //需查詢資料庫...
             var user = TokenManager.GetToken(refreshToken);
             //產生一組新的 Token 和 Refresh Token
             var token = TokenManager.Create(user);
