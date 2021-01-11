@@ -8,8 +8,8 @@ namespace AntifogeryDemo.Models
     public class Payload
     {
         //使用者資訊
-        public dynamic info { get; set; }
+        public User info { get; set; }
         //過期時間
-        public int exp { get; set; }
+        public DateTime exp { get; set; }
     }
 }

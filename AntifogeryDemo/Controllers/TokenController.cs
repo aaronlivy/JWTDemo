@@ -62,11 +62,13 @@ namespace AntifogeryDemo.Controllers
         [JWTValidate]
         public ActionResult IsAuthenticated()
         {
-            var result = true;
-            
-            var token = TokenManager.Create(result);
+            // var result = true;
+            //
+            // var token = TokenManager.Create(result);
 
-            return Json(token, JsonRequestBehavior.AllowGet);
+            var payload = System.Web.HttpContext.Current.Session["payload"].ToString();
+
+            return Content(payload);
         }
     }
 }

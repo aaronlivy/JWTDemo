@@ -138,6 +138,7 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Methods\Encrypt.cs" />
     <Compile Include="Methods\RNG.cs" />
     <Compile Include="Methods\TokenCache.cs" />
     <Compile Include="Methods\TokenCrypto.cs" />

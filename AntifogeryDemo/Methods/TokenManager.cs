@@ -33,7 +33,7 @@ namespace AntifogeryDemo.Methods
         }
 
         //產生 Token
-        public static Token Create(dynamic obj)
+        public static Token Create(User obj)
         {
             var exp = 30;   //過期時間(秒)
 
@@ -41,10 +41,7 @@ namespace AntifogeryDemo.Methods
             var payload = new Payload
             {
                 info = obj,
-                //Unix 時間戳
-                exp = Convert.ToInt32(
-                    (DateTime.Now.AddSeconds(exp) -
-                     new DateTime(1970, 1, 1)).TotalSeconds)
+                exp = DateTime.Now.AddSeconds(exp)
             };
             
             IJwtAlgorithm algorithm = new HMACSHA256Algorithm(); // symmetric
@@ -55,11 +52,12 @@ namespace AntifogeryDemo.Methods
             var iv = Guid.NewGuid().ToString().Replace("-", "").Substring(0, 16);
 
             //使用 AES 加密 Payload
-            var encrypt = TokenCrypto
-                .AESEncrypt(JsonConvert.SerializeObject(payload), key.Substring(0, 16), iv);
+             // var encrypt = TokenCrypto
+             //     .AESEncrypt(JsonConvert.SerializeObject(payload), key.Substring(0, 16), iv);
+             var enc_str = Encrypt.aesEncryptBase64(JsonConvert.SerializeObject(payload), key.Substring(0, 16));
             
 
-            var token = encoder.Encode(encrypt, secret);
+            var token = encoder.Encode(enc_str, secret);
 
             return new Token
             {
@@ -79,6 +77,7 @@ namespace AntifogeryDemo.Methods
 
             if (string.IsNullOrEmpty(token)) return null;
             var iv = Guid.NewGuid().ToString().Replace("-", "").Substring(0, 16);
+            var deconstring = string.Empty;
 
             try
             {
@@ -89,10 +88,8 @@ namespace AntifogeryDemo.Methods
                 IJwtAlgorithm algorithm = new HMACSHA256Algorithm(); // symmetric
                 IJwtDecoder decoder = new JwtDecoder(serializer, validator, urlEncoder, algorithm);
     
-                json = decoder.Decode(token, secret, verify: true);
-                
-                var base64 = TokenCrypto
-                    .AESDecrypt(json, key.Substring(0, 16), iv);
+                json = decoder.Decode(token, secret, verify:false ).Replace("\"", "");
+                deconstring = Encrypt.aesDecryptBase64(json, key.Substring(0, 16));
                 
                 Console.WriteLine(json);
             }
@@ -105,14 +102,15 @@ namespace AntifogeryDemo.Methods
                 Console.WriteLine("Token has invalid signature");
             }
             
-            var payload = JsonConvert.DeserializeObject<Payload>(json);
+            var payload = JsonConvert.DeserializeObject<Payload>(deconstring);
 
             //檢查是否過期
-            if (payload.exp < Convert.ToInt32(
-                (DateTime.Now - new DateTime(1970, 1, 1)).TotalSeconds))
+            if (payload.exp < DateTime.Now)
             {
                 return null;
             }
+
+            System.Web.HttpContext.Current.Session["payload"] = deconstring;
 
             return payload.info;
         }
