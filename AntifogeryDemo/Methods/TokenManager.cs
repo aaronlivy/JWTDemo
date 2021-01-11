@@ -18,11 +18,11 @@ namespace AntifogeryDemo.Methods
         public static string key = "AAAAAAAAAA-BBBBBBBBBB-CCCCCCCCCC-DDDDDDDDDD-EEEEEEEEEE-FFFFFFFFFF-GGGGGGGGGG";
         public const string secret = "GQDstcKsx0NHjPOuXOYg5MbeJ1XT0uFiwDVvVBrk";
         //紀錄 Refresh Token，需紀錄在資料庫
-        private static Dictionary<string, User> refreshTokens = new Dictionary<string, User>();
+        private static Dictionary<string, Guid> refreshTokens = new Dictionary<string, Guid>();
+        
+        public static void Add(string Key, Guid guid) => refreshTokens.Add(Key, guid);
 
-        public static void Add(string Key, User obj) => refreshTokens.Add(Key, obj);
-
-        public static User GetToken(string Key) => refreshTokens.Keys.Contains(Key) ? refreshTokens[Key] : null;
+        public static Guid GetTokenGuid(string key) => refreshTokens.ContainsKey(key)? refreshTokens[key] : new Guid();
 
         public static bool ContainsKey(string Key) => refreshTokens.Keys.Contains(Key);
 
@@ -49,15 +49,15 @@ namespace AntifogeryDemo.Methods
             IBase64UrlEncoder urlEncoder = new JwtBase64UrlEncoder();
             IJwtEncoder encoder = new JwtEncoder(algorithm, serializer, urlEncoder);
 
-            var iv = Guid.NewGuid().ToString().Replace("-", "").Substring(0, 16);
+            var guid = Guid.NewGuid();
+            var iv = guid.ToString().Replace("-", "").Substring(0, 16);
 
             //使用 AES 加密 Payload
-             // var encrypt = TokenCrypto
-             //     .AESEncrypt(JsonConvert.SerializeObject(payload), key.Substring(0, 16), iv);
-             var enc_str = Encrypt.aesEncryptBase64(JsonConvert.SerializeObject(payload), key.Substring(0, 16));
+            var enc_str = Encrypt.aesEncryptBase64(JsonConvert.SerializeObject(payload), key.Substring(0, 16));
             
-
             var token = encoder.Encode(enc_str, secret);
+            
+            Add(token, guid);
 
             return new Token
             {
@@ -75,8 +75,11 @@ namespace AntifogeryDemo.Methods
             var token = HttpContext.Current.Request.Headers["RequestVerificationToken"];
             var json = string.Empty;
 
-            if (string.IsNullOrEmpty(token)) return null;
-            var iv = Guid.NewGuid().ToString().Replace("-", "").Substring(0, 16);
+            if (string.IsNullOrEmpty(token) || ContainsKey(token)) return null;
+
+            var guid = GetTokenGuid(token);
+            
+            var iv = guid.ToString().Replace("-", "").Substring(0, 16);
             var deconstring = string.Empty;
 
             try
@@ -111,6 +114,8 @@ namespace AntifogeryDemo.Methods
             }
 
             System.Web.HttpContext.Current.Session["payload"] = deconstring;
+            
+            Remove(token);
 
             return payload.info;
         }
