@@ -7,7 +7,6 @@ using System.Security.Cryptography;
 using System.Web;
 using System.Web.Helpers;
 using System.Web.Mvc;
-using Newtonsoft.Json;
 
 namespace AntifogeryDemo.Controllers
 {
@@ -16,18 +15,6 @@ namespace AntifogeryDemo.Controllers
         public ActionResult Index()
         {
             return View();
-        }
-
-        public ActionResult Browser()
-        {
-            var browser = JsonConvert.SerializeObject(Request.Browser);
-            return Content(browser, "application/json");
-        }
-        
-        public ActionResult UserAgent()
-        {
-            var browser = JsonConvert.SerializeObject(Request.UserAgent);
-            return Content(browser, "application/json");
         }
 
         public ActionResult About()
