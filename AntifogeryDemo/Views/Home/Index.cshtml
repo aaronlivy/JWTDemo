@@ -16,9 +16,9 @@
 				async: false,
 				contentType: "application/json; charset=utf-8",
 				dataType: "json",
-				headers:{
-					
-					'RequestVerificationToken':'@CommonRazorFunctions.GetAntiForgeryToken()'
+				headers:{					
+					'RequestVerificationToken': '@CommonRazorFunctions.GetAntiForgeryToken()',
+					'Username':'aaronlivy'
 				},
                 success: function (response) {
                     alert('response: ' + response);
