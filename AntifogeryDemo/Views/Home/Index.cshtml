@@ -16,9 +16,9 @@
 				async: false,
 				contentType: "application/json; charset=utf-8",
 				dataType: "json",
-				headers:{
-					//加入 Request Header，這裡就會使用到在一開始所建立的 GetAntiForgeryToken()
-					'RequestVerificationToken':'@CommonRazorFunctions.GetAntiForgeryToken()'
+				headers:{					
+					'RequestVerificationToken': '@CommonRazorFunctions.GetAntiForgeryToken()',
+					'Username':'aaronlivy'
 				},
                 success: function (response) {
                     alert('response: ' + response);

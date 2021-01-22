@@ -6,6 +6,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Web.Mvc;
+using AntifogeryDemo.Filters;
 
 namespace AntifogeryDemo.Controllers
 {
@@ -31,39 +32,42 @@ namespace AntifogeryDemo.Controllers
 
             //產生 Token
             var token = TokenManager.Create(user);
-            //需存入資料庫
-            TokenManager.Add(token.refresh_token, user);
+
             return Json(token, JsonRequestBehavior.AllowGet);
         }
 
-        //換取新 Token
-        [HttpPost]
-        public ActionResult Refresh(string refreshToken)
-        {
-            //檢查 Refresh Token 是否正確
-            if (!TokenManager.ContainsKey(refreshToken))
-            {
-                throw new Exception("查無此 Refresh Token");
-            }
-            //需查詢資料庫
-            var user = TokenManager.GetToken(refreshToken);
-            //產生一組新的 Token 和 Refresh Token
-            var token = TokenManager.Create(user);
-            //刪除舊的
-            TokenManager.Remove(refreshToken);
-            //存入新的
-            TokenManager.Add(token.refresh_token, user);
-            return Json(token, JsonRequestBehavior.AllowGet);
-        }
+        // //換取新 Token
+        // [HttpPost]
+        // public ActionResult Refresh(string refreshToken)
+        // {
+        //     //檢查 Refresh Token 是否正確
+        //     if (!TokenManager.ContainsKey(refreshToken))
+        //     {
+        //         throw new Exception("查無此 Refresh Token");
+        //     }
+        //     //需查詢資料庫
+        //     var user = TokenManager.GetToken(refreshToken);
+        //     //產生一組新的 Token 和 Refresh Token
+        //     var token = TokenManager.Create(user);
+        //     //刪除舊的
+        //     TokenManager.Remove(refreshToken);
+        //     //存入新的
+        //     TokenManager.Add(token.refresh_token, user);
+        //     return Json(token, JsonRequestBehavior.AllowGet);
+        // }
 
         //測試是否通過驗證
         [HttpPost]
+        [JWTValidate]
         public ActionResult IsAuthenticated()
         {
-            var user = TokenManager.GetUser();
-            var result = user == null ? false : true;
+            // var result = true;
+            //
+            // var token = TokenManager.Create(result);
 
-            return Json(result, JsonRequestBehavior.AllowGet);
+            var payload = System.Web.HttpContext.Current.Session["payload"].ToString();
+
+            return Content(payload);
         }
     }
 }

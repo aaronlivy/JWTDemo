@@ -9,7 +9,7 @@ namespace AntifogeryDemo.Methods
     {
         private Dictionary<string, DateTime> Pool = new Dictionary<string, DateTime>();
         private static TokenCache Instance = new TokenCache();
-        private int seconds = 10;
+        private int seconds = 60;
 
         private TokenCache()
         {
